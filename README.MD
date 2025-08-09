@@ -1,6 +1,6 @@
 # Cert Generator
 I made this to an alternative to openSSL & its forks.
-That's because openSSL & its forks, (exmple: libreSSL) is pure shit when it comes to cert generation.
+That's because openSSL & its forks, (exmple: libreSSL) are pure shit when it comes to cert generation.
 You need to put a file in `C:\Windows\Piss` or something like, and you must wear clown shoes and refer to yourself as mary?
 It's all over the place, and there is no proper documentation.
 It's pure shit, who ever come up with that idea is clearly an idiot.
