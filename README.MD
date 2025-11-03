@@ -16,4 +16,4 @@ Anyway, example configuration files are included.
 
 
 # Requirements
-JDK-24
+JDK-25
