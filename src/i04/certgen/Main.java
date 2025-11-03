@@ -38,11 +38,16 @@ public class Main {
 
         CertConfig config = new CertConfig();
 
+        config.keyAlgorithm = props.getProperty("key.algorithm");
+        if (!config.keyAlgorithm.equals(TlsUtils.KEY_EXCHANGE_ALGORITHM) && !config.keyAlgorithm.equals(TlsUtils.SIGNATURE_ALGORITHM)) {
+            throw new IllegalArgumentException("Unsupported key algorithm: " + config.keyAlgorithm);
+        }
 
         config._keyOutput = props.getProperty("output.key");
         config._crtOutput = props.getProperty("output.crt");
 
-        config.subjectAltName = props.getProperty("subjectAltName").trim();
+        config.subjectAltName = props.getProperty("subject.alt.name").trim();
+        System.out.println("config.subjectAltName = " + config.subjectAltName);
 
         config.name = new CertName();
         config.name.commonName = props.getProperty("name.commonName").trim();
@@ -95,7 +100,7 @@ public class Main {
         return config;
     }
 
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         if (args.length != 1) {
             System.out.println("Usage: certgen <properties file>");
             System.exit(1);
@@ -105,7 +110,7 @@ public class Main {
         CertConfig config = loadCertConfig(args[0], 0);
 
         System.out.println("Generating key pair");
-        KeyPair keyPair = TlsUtils.generateKeyPair();
+        KeyPair keyPair = TlsUtils.generateKeyPair(config.keyAlgorithm);
 
         config.certKey = keyPair.getPublic();
         if (config._selfSigned) {
@@ -118,13 +123,13 @@ public class Main {
         System.out.println("Saving private key, Please enter passphrase: ");
         char[] keyPassword = System.console().readPassword();
         try (FileWriter writer = new FileWriter(config._keyOutput)) {
-            TlsUtils.writeKeyToPem(keyPair.getPrivate(), keyPassword, writer);
+            TlsUtils.writeKeyAsPem(keyPair.getPrivate(), keyPassword, writer);
             writer.flush();
         }
 
         System.out.println("Saving certificate");
         try (FileWriter writer = new FileWriter(config._crtOutput)) {
-            TlsUtils.writeCertificateToPEM(ca, writer);
+            TlsUtils.writeCertificateToPem(ca, writer);
             writer.write(config._crtChain);
             writer.flush();
         }
